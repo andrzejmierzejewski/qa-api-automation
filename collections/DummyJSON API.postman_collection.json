@@ -143,17 +143,74 @@
         },
         {
           "name": "Search Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response time is acceptable\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(1000);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response has products array\", function () {\r\n    pm.expect(responseJson).to.have.property('products');\r\n    pm.expect(responseJson.products).to.be.an('array');\r\n});\r\n\r\npm.test(\"All returned products match the search term\", function () {\r\n    responseJson.products.forEach(function (product) {\r\n        const searchTerm = pm.environment.get(\"search_term\").toLowerCase();\r\n        const matchesTitle = product.title.toLowerCase().includes(searchTerm);\r\n        const matchesDescription = product.description.toLowerCase().includes(searchTerm);\r\n        pm.expect(matchesTitle || matchesDescription).to.be.true;\r\n    });\r\n});\r\n\r\npm.test(\"Search results count does not exceed total\", function () {\r\n    pm.expect(responseJson.products.length).to.be.at.most(responseJson.total);\r\n});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
-            "header": []
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q={{search_term}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "{{search_term}}"
+                }
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Add Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function (){\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response echoes submitted fields\", function () {\r\n    pm.expect(responseJson.title).to.eql(\"Test Product\");\r\n    pm.expect(responseJson.price).to.eql(99.99);\r\n});\r\n\r\npm.test(\"New product gets an id beyond the existing dataset\", function () {\r\n    pm.expect(responseJson.id).to.be.a('number');\r\n    pm.expect(responseJson.id).to.be.above(100);\r\n});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
-            "header": []
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Test Product\",\r\n  \"price\": 99.99,\r\n  \"category\": \"smartphones\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products/add",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "add"
+              ]
+            }
           },
           "response": []
         },
@@ -167,9 +224,30 @@
         },
         {
           "name": "Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response confirms deletion via isDeleted flag\", function () {\r\n    pm.expect(responseJson).to.have.property('isDeleted', true);\r\n    pm.expect(responseJson).to.have.property('deletedOn');\r\n});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
-            "header": []
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ]
+            }
           },
           "response": []
         }
