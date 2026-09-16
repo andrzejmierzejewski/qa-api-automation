@@ -1,0 +1,191 @@
+{
+  "info": {
+    "_postman_id": "186cdfbb-b769-4752-ae57-1f8b1f0549d8",
+    "name": "DummyJSON API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56403148",
+    "_collection_link": "https://go.postman.co/collection/56403148-186cdfbb-b769-4752-ae57-1f8b1f0549d8?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is acceptable\", function() {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+                  "});\r",
+                  "\r",
+                  "const responseJson = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Response has accessToken and refreshToken\", function () {\r",
+                  "    pm.expect(responseJson).to.have.property('accessToken');\r",
+                  "    pm.expect(responseJson).to.have.property('refreshToken');\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response contains correct username\", function (){\r",
+                  "    pm.expect(responseJson.username).to.eql(pm.environment.get(\"username\"));\r",
+                  "});\r",
+                  "\r",
+                  "pm.environment.set(\"accessToken\", responseJson.accessToken);\r",
+                  "pm.environment.set(\"refreshToken\", responseJson.refreshToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"{{username}}\",\r\n  \"password\": \"{{password}}\",\r\n  \"expiresInMins\": 30\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "All Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"Response time is acceptable\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(1000);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response has products array\", function () {\r\n    pm.expect(responseJson).to.have.property(\"products\");\r\n    pm.expect(responseJson.products).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Pagination fields are present and correct type\", function () {\r\n    pm.expect(responseJson).to.have.property(\"total\");\r\n    pm.expect(responseJson).to.have.property(\"skip\");\r\n    pm.expect(responseJson).to.have.property(\"limit\");\r\n    pm.expect(responseJson.total).to.be.a(\"number\");\r\n});\r\n\r\npm.test(\"Default page size is 30 or fewer\", function () {\r\n    pm.expect(responseJson.products.length).to.be.at.most(30);\r\n});\r\n\r\npm.test(\"Every product has required fields\", function() {\r\n    responseJson.products.forEach(function (product) {\r\n        pm.expect(product).to.have.property(\"id\");\r\n        pm.expect(product).to.have.property(\"title\");\r\n        pm.expect(product).to.have.property(\"price\");\r\n        pm.expect(product).to.have.property(\"category\");\r\n    });\r\n});\r\n\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Single Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response time is acceptable\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(1000);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Returned product has expected fields\", function () {\r\n    pm.expect(responseJson).to.have.property('id');\r\n    pm.expect(responseJson).to.have.property('title');\r\n    pm.expect(responseJson).to.have.property('price');\r\n    pm.expect(responseJson).to.have.property('category');\r\n});\r\n\r\npm.test(\"Returned product id matches requested id\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"product_id\")));\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Add Product",
+          "request": {
+            "method": "POST",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Product",
+          "request": {
+            "method": "DELETE",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Carts",
+      "item": []
+    },
+    {
+      "name": "Users",
+      "item": []
+    },
+    {
+      "name": "Comments",
+      "item": []
+    }
+  ]
+}
