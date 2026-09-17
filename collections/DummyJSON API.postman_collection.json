@@ -638,7 +638,303 @@
     },
     {
       "name": "Users",
-      "item": []
+      "item": [
+        {
+          "name": "All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Every user includes a password field for login testing\", function () {\r\n    responseJson.users.forEach(function (user) {\r\n        pm.expect(user).to.have.property('password');\r\n        pm.expect(user.password).to.be.a('string').and.not.empty;\r\n    });\r\n});\r\n\r\npm.test(\"Response has users array and pagination fields\", function () {\r\n    pm.expect(responseJson.users).to.be.an('array');\r\n    pm.expect(responseJson).to.have.property('total');\r\n    pm.expect(responseJson).to.have.property('skip');\r\n    pm.expect(responseJson).to.have.property('limit');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Single User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Nested address and company objects are present\", function () {\r\n    pm.expect(responseJson.address).to.have.property('city');\r\n    pm.expect(responseJson.company).to.have.property('name');\r\n});\r\n\r\npm.test(\"Returned user id matches requested id\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"user_id\")));\r\n});\r\n\r\npm.test(\"Returned user has expected top-level fields\", function () {\r\n    pm.expect(responseJson).to.have.property('firstName');\r\n    pm.expect(responseJson).to.have.property('lastName');\r\n    pm.expect(responseJson).to.have.property('email');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"All results match the search term in name\", function () {\r\n    responseJson.users.forEach(function (user) {\r\n        const fullName = (user.firstName + \" \" + user.lastName).toLowerCase();\r\n        pm.expect(fullName).to.include(\"john\");\r\n    });\r\n});\r\n\r\npm.test(\"Response has users array\", function () {\r\n    pm.expect(responseJson).to.have.property('users');\r\n    pm.expect(responseJson.users).to.be.an('array');\r\n});\r\n\r\npm.test(\"Search results count does not exceed total\", function () {\r\n    pm.expect(responseJson.users.length).to.be.at.most(responseJson.total);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/search?q=John",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "John"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"All returned users match the nested filter\", function () {\r\n    responseJson.users.forEach(function (user) {\r\n        pm.expect(user.hair.color).to.eql(\"Brown\");\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/filter?key=hair.color&value=Brown",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "hair.color"
+                },
+                {
+                  "key": "value",
+                  "value": "Brown"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sort Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Users are sorted alphabetically by firstName ascending\", function () {\r\n    const names = responseJson.users.map(function (user) {\r\n        return user.firstName;\r\n    });\r\n    const sortedNames = [...names].sort();\r\n    pm.expect(names).to.eql(sortedNames);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users?sortBy=firstName&order=asc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "firstName"
+                },
+                {
+                  "key": "order",
+                  "value": "asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User's Carts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"All returned carts belong to this user\", function () {\r\n    responseJson.carts.forEach(function (cart) {\r\n        pm.expect(cart.userId).to.eql(Number(pm.environment.get(\"user_id\")));\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}/carts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_id}}",
+                "carts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response echoes submitted fields\", function () {\r\n    pm.expect(responseJson.firstName).to.eql(\"\");\r\n    pm.expect(responseJson.lastName).to.eql(\"\");\r\n});\r\n\r\npm.test(\"New user is assigned an id\", function () {\r\n    pm.expect(responseJson.id).to.be.a('number');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/add",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "add"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Updated field reflects the new value\", function () {\r\n    pm.expect(responseJson.firstName).to.eql(\"Updated\");\r\n});\r\n\r\npm.test(\"User id stays the same after update\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"user_id\")));\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"firstName\": \"Updated\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Response confirms deletion via isDeleted flag\", function () {\r\n    pm.expect(responseJson).to.have.property('isDeleted', true);\r\n    pm.expect(responseJson).to.have.property('deletedOn');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     },
     {
       "name": "Comments",
