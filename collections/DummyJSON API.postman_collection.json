@@ -69,6 +69,44 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"New accessToken is returned and is a string\", function () {\r\n    pm.expect(responseJson).to.have.property('accessToken');\r\n    pm.expect(responseJson.accessToken).to.be.a('string');\r\n});\r\n\r\npm.test(\"New accessToken is different from the old one\", function () {\r\n    const oldToken = pm.environment.get(\"accessToken\");\r\n    pm.expect(responseJson.accessToken).to.not.eql(oldToken);\r\n});\r\n\r\npm.environment.set(\"accessToken\", responseJson.accessToken);\r\npm.environment.set(\"refreshToken\", responseJson.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"refreshToken\": \"{{refreshToken}}\",\r\n  \"expiresInMins\": 30\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -253,7 +291,7 @@
           "response": []
         },
         {
-          "name": "Product",
+          "name": "Delete Product",
           "event": [
             {
               "listen": "test",
@@ -288,33 +326,310 @@
       "item": [
         {
           "name": "All Carts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Each cart has a nested products array\", function () {\r\n    responseJson.carts.forEach(function (cart) {\r\n        pm.expect(cart.products).to.be.an('array');\r\n        pm.expect(cart.products.length).to.be.above(0);\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": ""
+              "raw": "{{base_url}}/carts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts"
+              ]
             }
           },
           "response": []
         },
         {
           "name": "Single Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Discounted total never exceeds total\", function () {\r\n    pm.expect(responseJson.discountedTotal).to.be.at.most(responseJson.total);\r\n});\r\n\r\npm.test(\"Cart id matches requested id\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"cart_id\")));\r\n});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": ""
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
             }
           },
           "response": []
         },
         {
           "name": "User's Carts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"All returned carts belong to the requested user\", function () {\r\n    responseJson.carts.forEach(function (cart) {\r\n        pm.expect(cart.userId).to.eql(Number(pm.environment.get(\"user_id\")));\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": ""
+              "raw": "{{base_url}}/carts/user/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "user",
+                "{{user_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Limit & Skip Carts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Returned carts respect the limit\", function () {\r\n    pm.expect(responseJson.carts.length).to.be.at.most(5);\r\n    pm.expect(responseJson.limit).to.eql(5);\r\n});\r\n\r\npm.test(\"Each cart only contains selected fields\", function () {\r\n    responseJson.carts.forEach(function (cart) {\r\n        const keys = Object.keys(cart);\r\n        pm.expect(keys).to.have.members(['id', 'total', 'userId']);\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts?limit=5&skip=5&select=total,userId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5"
+                },
+                {
+                  "key": "skip",
+                  "value": "5"
+                },
+                {
+                  "key": "select",
+                  "value": "total,userId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sort Carts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Carts are sorted by total in descending order\", function () {\r\n    for (let i = 0; i < responseJson.carts.length - 1; i++) {\r\n        pm.expect(responseJson.carts[i].total).to.be.at.least(responseJson.carts[i + 1].total);\r\n    }\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts?sortBy=total&order=desc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "total"
+                },
+                {
+                  "key": "order",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Cart is created for the correct user\", function () {\r\n    pm.expect(responseJson.userId).to.eql(1);\r\n});\r\n\r\npm.test(\"Calculated totals are present and numeric\", function () {\r\n    pm.expect(responseJson.total).to.be.a('number');\r\n    pm.expect(responseJson.totalQuantity).to.be.a('number');\r\n    pm.expect(responseJson.totalQuantity).to.be.above(0);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"userId\": 1,\r\n  \"products\": [\r\n    { \"id\": 1, \"quantity\": 2 }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/carts/add",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "add"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Cart (merge: true)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"merge:true adds to existing cart products\", function () {\r\n    pm.expect(responseJson.products.length).to.be.above(1);\r\n});\r\n\r\npm.test(\"Totals recalculated after update\", function () {\r\n    pm.expect(responseJson.totalProducts).to.be.a('number');\r\n    pm.expect(responseJson.totalQuantity).to.be.at.least(1);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"merge\": true,\r\n  \"products\": [\r\n    { \"id\": 5, \"quantity\": 1 }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Cart (merge: false)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"merge:false replaces the cart's products entirely\", function () {\r\n    pm.expect(responseJson.products.length).to.eql(1);\r\n    pm.expect(responseJson.products[0].id).to.eql(5);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"merge\": false,\r\n  \"products\": [\r\n    { \"id\": 5, \"quantity\": 1 }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Response confirms deletion via isDeleted flag\", function () {\r\n    pm.expect(responseJson).to.have.property('isDeleted', true);\r\n    pm.expect(responseJson).to.have.property('deletedOn');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{cart_id}}"
+              ]
             }
           },
           "response": []
