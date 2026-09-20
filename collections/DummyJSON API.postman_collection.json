@@ -78,7 +78,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"New accessToken is returned and is a string\", function () {\r\n    pm.expect(responseJson).to.have.property('accessToken');\r\n    pm.expect(responseJson.accessToken).to.be.a('string');\r\n});\r\n\r\npm.test(\"New accessToken is different from the old one\", function () {\r\n    const oldToken = pm.environment.get(\"accessToken\");\r\n    pm.expect(responseJson.accessToken).to.not.eql(oldToken);\r\n});\r\n\r\npm.environment.set(\"accessToken\", responseJson.accessToken);\r\npm.environment.set(\"refreshToken\", responseJson.refreshToken);"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"New accessToken is returned and is a string\", function () {\r\n    pm.expect(responseJson).to.have.property('accessToken');\r\n    pm.expect(responseJson.accessToken).to.be.a('string');\r\n});\r\n\r\npm.test(\"New accessToken is different from the old one\", function () {\r\n    const oldToken = pm.environment.get(\"accessToken\");\r\n    pm.expect(responseJson.accessToken).to.not.eql(oldToken);\r\n});\r\n\r\npm.environment.set(\"accessToken\", responseJson.accessToken);\r\npm.environment.set(\"refreshToken\", responseJson.refreshToken);"
                 ]
               }
             }
@@ -419,7 +419,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Returned carts respect the limit\", function () {\r\n    pm.expect(responseJson.carts.length).to.be.at.most(5);\r\n    pm.expect(responseJson.limit).to.eql(5);\r\n});\r\n\r\npm.test(\"Each cart only contains selected fields\", function () {\r\n    responseJson.carts.forEach(function (cart) {\r\n        const keys = Object.keys(cart);\r\n        pm.expect(keys).to.have.members(['id', 'total', 'userId']);\r\n    });\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Returned carts respect the limit\", function () {\r\n    pm.expect(responseJson.carts.length).to.be.at.most(5);\r\n    pm.expect(responseJson.limit).to.eql(5);\r\n});\r\n\r\npm.test(\"Each cart only contains selected fields\", function () {\r\n    responseJson.carts.forEach(function (cart) {\r\n        const keys = Object.keys(cart);\r\n        pm.expect(keys).to.have.members(['id', 'total', 'userId']);\r\n    });\r\n});"
                 ]
               }
             }
@@ -461,7 +461,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Carts are sorted by total in descending order\", function () {\r\n    for (let i = 0; i < responseJson.carts.length - 1; i++) {\r\n        pm.expect(responseJson.carts[i].total).to.be.at.least(responseJson.carts[i + 1].total);\r\n    }\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Carts are sorted by total in descending order\", function () {\r\n    for (let i = 0; i < responseJson.carts.length - 1; i++) {\r\n        pm.expect(responseJson.carts[i].total).to.be.at.least(responseJson.carts[i + 1].total);\r\n    }\r\n});"
                 ]
               }
             }
@@ -537,7 +537,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"merge:true adds to existing cart products\", function () {\r\n    pm.expect(responseJson.products.length).to.be.above(1);\r\n});\r\n\r\npm.test(\"Totals recalculated after update\", function () {\r\n    pm.expect(responseJson.totalProducts).to.be.a('number');\r\n    pm.expect(responseJson.totalQuantity).to.be.at.least(1);\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"merge:true adds to existing cart products\", function () {\r\n    pm.expect(responseJson.products.length).to.be.above(1);\r\n});\r\n\r\npm.test(\"Totals recalculated after update\", function () {\r\n    pm.expect(responseJson.totalProducts).to.be.a('number');\r\n    pm.expect(responseJson.totalQuantity).to.be.at.least(1);\r\n});"
                 ]
               }
             }
@@ -575,7 +575,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"merge:false replaces the cart's products entirely\", function () {\r\n    pm.expect(responseJson.products.length).to.eql(1);\r\n    pm.expect(responseJson.products[0].id).to.eql(5);\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"merge:false replaces the cart's products entirely\", function () {\r\n    pm.expect(responseJson.products.length).to.eql(1);\r\n    pm.expect(responseJson.products[0].id).to.eql(5);\r\n});"
                 ]
               }
             }
@@ -647,7 +647,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Every user includes a password field for login testing\", function () {\r\n    responseJson.users.forEach(function (user) {\r\n        pm.expect(user).to.have.property('password');\r\n        pm.expect(user.password).to.be.a('string').and.not.empty;\r\n    });\r\n});\r\n\r\npm.test(\"Response has users array and pagination fields\", function () {\r\n    pm.expect(responseJson.users).to.be.an('array');\r\n    pm.expect(responseJson).to.have.property('total');\r\n    pm.expect(responseJson).to.have.property('skip');\r\n    pm.expect(responseJson).to.have.property('limit');\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Every user includes a password field for login testing\", function () {\r\n    responseJson.users.forEach(function (user) {\r\n        pm.expect(user).to.have.property('password');\r\n        pm.expect(user.password).to.be.a('string').and.not.empty;\r\n    });\r\n});\r\n\r\npm.test(\"Response has users array and pagination fields\", function () {\r\n    pm.expect(responseJson.users).to.be.an('array');\r\n    pm.expect(responseJson).to.have.property('total');\r\n    pm.expect(responseJson).to.have.property('skip');\r\n    pm.expect(responseJson).to.have.property('limit');\r\n});"
                 ]
               }
             }
@@ -675,7 +675,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Nested address and company objects are present\", function () {\r\n    pm.expect(responseJson.address).to.have.property('city');\r\n    pm.expect(responseJson.company).to.have.property('name');\r\n});\r\n\r\npm.test(\"Returned user id matches requested id\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"user_id\")));\r\n});\r\n\r\npm.test(\"Returned user has expected top-level fields\", function () {\r\n    pm.expect(responseJson).to.have.property('firstName');\r\n    pm.expect(responseJson).to.have.property('lastName');\r\n    pm.expect(responseJson).to.have.property('email');\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Nested address and company objects are present\", function () {\r\n    pm.expect(responseJson.address).to.have.property('city');\r\n    pm.expect(responseJson.company).to.have.property('name');\r\n});\r\n\r\npm.test(\"Returned user id matches requested id\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"user_id\")));\r\n});\r\n\r\npm.test(\"Returned user has expected top-level fields\", function () {\r\n    pm.expect(responseJson).to.have.property('firstName');\r\n    pm.expect(responseJson).to.have.property('lastName');\r\n    pm.expect(responseJson).to.have.property('email');\r\n});"
                 ]
               }
             }
@@ -704,7 +704,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"All results match the search term in name\", function () {\r\n    responseJson.users.forEach(function (user) {\r\n        const fullName = (user.firstName + \" \" + user.lastName).toLowerCase();\r\n        pm.expect(fullName).to.include(\"john\");\r\n    });\r\n});\r\n\r\npm.test(\"Response has users array\", function () {\r\n    pm.expect(responseJson).to.have.property('users');\r\n    pm.expect(responseJson.users).to.be.an('array');\r\n});\r\n\r\npm.test(\"Search results count does not exceed total\", function () {\r\n    pm.expect(responseJson.users.length).to.be.at.most(responseJson.total);\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"All results match the search term in name\", function () {\r\n    responseJson.users.forEach(function (user) {\r\n        const fullName = (user.firstName + \" \" + user.lastName).toLowerCase();\r\n        pm.expect(fullName).to.include(\"john\");\r\n    });\r\n});\r\n\r\npm.test(\"Response has users array\", function () {\r\n    pm.expect(responseJson).to.have.property('users');\r\n    pm.expect(responseJson.users).to.be.an('array');\r\n});\r\n\r\npm.test(\"Search results count does not exceed total\", function () {\r\n    pm.expect(responseJson.users.length).to.be.at.most(responseJson.total);\r\n});"
                 ]
               }
             }
@@ -739,7 +739,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"All returned users match the nested filter\", function () {\r\n    responseJson.users.forEach(function (user) {\r\n        pm.expect(user.hair.color).to.eql(\"Brown\");\r\n    });\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"All returned users match the nested filter\", function () {\r\n    responseJson.users.forEach(function (user) {\r\n        pm.expect(user.hair.color).to.eql(\"Brown\");\r\n    });\r\n});\r\n\r\npm.test(\"Response has users array\", function () {\r\n    pm.expect(responseJson).to.have.property('users');\r\n    pm.expect(responseJson.users).to.be.an('array');\r\n});"
                 ]
               }
             }
@@ -778,7 +778,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Users are sorted alphabetically by firstName ascending\", function () {\r\n    const names = responseJson.users.map(function (user) {\r\n        return user.firstName;\r\n    });\r\n    const sortedNames = [...names].sort();\r\n    pm.expect(names).to.eql(sortedNames);\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Users are sorted alphabetically by firstName ascending\", function () {\r\n    const names = responseJson.users.map(function (user) {\r\n        return user.firstName;\r\n    });\r\n    const sortedNames = [...names].sort();\r\n    pm.expect(names).to.eql(sortedNames);\r\n});\r\n\r\npm.test(\"Response has users array\", function () {\r\n    pm.expect(responseJson).to.have.property('users');\r\n    pm.expect(responseJson.users).to.be.an('array');\r\n});"
                 ]
               }
             }
@@ -816,7 +816,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"All returned carts belong to this user\", function () {\r\n    responseJson.carts.forEach(function (cart) {\r\n        pm.expect(cart.userId).to.eql(Number(pm.environment.get(\"user_id\")));\r\n    });\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"All returned carts belong to this user\", function () {\r\n    responseJson.carts.forEach(function (cart) {\r\n        pm.expect(cart.userId).to.eql(Number(pm.environment.get(\"user_id\")));\r\n    });\r\n});"
                 ]
               }
             }
@@ -846,7 +846,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response echoes submitted fields\", function () {\r\n    pm.expect(responseJson.firstName).to.eql(\"\");\r\n    pm.expect(responseJson.lastName).to.eql(\"\");\r\n});\r\n\r\npm.test(\"New user is assigned an id\", function () {\r\n    pm.expect(responseJson.id).to.be.a('number');\r\n});"
+                  "pm.test(\"Status code is 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response echoes submitted fields\", function () {\r\n    pm.expect(responseJson.firstName).to.eql(\"Test\");\r\n    pm.expect(responseJson.lastName).to.eql(\"User\");\r\n});\r\n\r\npm.test(\"New user is assigned an id\", function () {\r\n    pm.expect(responseJson.id).to.be.a('number');\r\n});"
                 ]
               }
             }
@@ -854,6 +854,15 @@
           "request": {
             "method": "POST",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"firstName\": \"Test\",\r\n  \"lastName\": \"User\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{base_url}}/users/add",
               "host": [
@@ -875,7 +884,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Updated field reflects the new value\", function () {\r\n    pm.expect(responseJson.firstName).to.eql(\"Updated\");\r\n});\r\n\r\npm.test(\"User id stays the same after update\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"user_id\")));\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Updated field reflects the new value\", function () {\r\n    pm.expect(responseJson.firstName).to.eql(\"Updated\");\r\n});\r\n\r\npm.test(\"User id stays the same after update\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"user_id\")));\r\n});"
                 ]
               }
             }
@@ -913,7 +922,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Response confirms deletion via isDeleted flag\", function () {\r\n    pm.expect(responseJson).to.have.property('isDeleted', true);\r\n    pm.expect(responseJson).to.have.property('deletedOn');\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response confirms deletion via isDeleted flag\", function () {\r\n    pm.expect(responseJson).to.have.property('isDeleted', true);\r\n    pm.expect(responseJson).to.have.property('deletedOn');\r\n});"
                 ]
               }
             }
