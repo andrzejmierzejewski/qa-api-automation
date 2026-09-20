@@ -947,7 +947,243 @@
     },
     {
       "name": "Comments",
-      "item": []
+      "item": [
+        {
+          "name": "All Commments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response has comments array and pagination fields\", function () {\r\n    pm.expect(responseJson.comments).to.be.an('array');\r\n    pm.expect(responseJson).to.have.property('total');\r\n    pm.expect(responseJson).to.have.property('skip');\r\n    pm.expect(responseJson).to.have.property('limit');\r\n});\r\n\r\npm.test(\"Every comment has required fields\", function () {\r\n    responseJson.comments.forEach(function (comment) {\r\n        pm.expect(comment).to.have.property('body');\r\n        pm.expect(comment).to.have.property('postId');\r\n        pm.expect(comment).to.have.property('likes');\r\n        pm.expect(comment.user).to.have.property('username');\r\n    });\r\n});\r\n\r\npm.test(\"Likes count is never negative\", function () {\r\n    responseJson.comments.forEach(function (comment) {\r\n        pm.expect(comment.likes).to.be.at.least(0);\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/comments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "comments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Single Comment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Comment has body text and a nested user object\", function () {\r\n    pm.expect(responseJson.body).to.be.a('string').and.not.empty;\r\n    pm.expect(responseJson.user).to.have.property('username');\r\n    pm.expect(responseJson.user).to.have.property('fullName');\r\n});\r\n\r\npm.test(\"Comment id matches requested id\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"comment_id\")));\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/comments/{{comment_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "comments",
+                "{{comment_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Comments by Post",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response has comments array\", function () {\r\n    pm.expect(responseJson).to.have.property('comments');\r\n    pm.expect(responseJson.comments).to.be.an('array');\r\n});\r\n\r\npm.test(\"All returned comments belong to the requested post\", function () {\r\n    responseJson.comments.forEach(function (comment) {\r\n        pm.expect(comment.postId).to.eql(Number(pm.environment.get(\"post_id\")));\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/comments/post/{{post_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "comments",
+                "post",
+                "{{post_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Comments with field section",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Each comment only contains the selected fields (plus id)\", function () {\r\n    responseJson.comments.forEach(function (comment) {\r\n        const keys = Object.keys(comment);\r\n        pm.expect(keys).to.have.members(['id', 'body', 'postId']);\r\n        pm.expect(keys.length).to.eql(3);\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/comments?select=body,postId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "comments"
+              ],
+              "query": [
+                {
+                  "key": "select",
+                  "value": "body,postId"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Comment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response echoes submitted fields\", function () {\r\n    pm.expect(responseJson.body).to.eql(\"Great post!\");\r\n    pm.expect(responseJson.postId).to.eql(1);\r\n});\r\n\r\npm.test(\"New comment is assigned an id\", function () {\r\n    pm.expect(responseJson.id).to.be.a('number');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"body\": \"Great post!\",\r\n  \"postId\": 1,\r\n  \"userId\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/comments/add",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "comments",
+                "add"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Comment body reflects the update\", function () {\r\n    pm.expect(responseJson.body).to.eql(\"Updated comment text\");\r\n});\r\n\r\npm.test(\"Comment id stays the same after update\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"comment_id\")));\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"body\": \"Updated comment text\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/comments/{{comment_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "comments",
+                "{{comment_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response confirms deletion via isDeleted flag\", function () {\r\n    pm.expect(responseJson).to.have.property('isDeleted', true);\r\n    pm.expect(responseJson).to.have.property('deletedOn');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/comments/{{comment_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "comments",
+                "{{comment_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [
