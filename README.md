@@ -1,6 +1,12 @@
 # DummyJSON API Test Automation
 
+![API Tests](https://github.com/andrzejmierzejewski/qa-api-automation/actions/workflows/tests.yml/badge.svg)
+
 An API test automation suite built with Postman, covering authentication, full CRUD operations, negative testing, and an end-to-end purchase flow against the [DummyJSON](https://dummyjson.com/docs) REST API. The suite runs locally via Postman or headlessly via Newman, and is integrated into GitHub Actions for continuous testing on every push.
+
+## About This Project
+
+This project was built as a hands-on introduction to API test automation, coming from a background in manual QA. Rather than following a single fixed tutorial, the collection was built incrementally - one resource at a time - with an emphasis on writing tests that verify real behavior and business logic, not just status codes. Along the way, this involved debugging real failures, investigating unexpected API behavior, and adjusting test design around genuine platform limitations (documented under Known Issues below) rather than working around them silently.
 
 ## Tech Stack
 
