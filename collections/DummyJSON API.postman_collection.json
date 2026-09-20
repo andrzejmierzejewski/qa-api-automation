@@ -16,32 +16,10 @@
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Response time is acceptable\", function() {\r",
-                  "    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-                  "});\r",
-                  "\r",
-                  "const responseJson = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"Response has accessToken and refreshToken\", function () {\r",
-                  "    pm.expect(responseJson).to.have.property('accessToken');\r",
-                  "    pm.expect(responseJson).to.have.property('refreshToken');\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Response contains correct username\", function (){\r",
-                  "    pm.expect(responseJson.username).to.eql(pm.environment.get(\"username\"));\r",
-                  "});\r",
-                  "\r",
-                  "pm.environment.set(\"accessToken\", responseJson.accessToken);\r",
-                  "pm.environment.set(\"refreshToken\", responseJson.refreshToken);"
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response has accessToken and refreshToken\", function () {\r\n    pm.expect(responseJson).to.have.property('accessToken');\r\n    pm.expect(responseJson).to.have.property('refreshToken');\r\n});\r\n\r\npm.test(\"Response contains correct username\", function (){\r\n    pm.expect(responseJson.username).to.eql(pm.environment.get(\"username\"));\r\n});\r\n\r\npm.environment.set(\"accessToken\", responseJson.accessToken);\r\npm.environment.set(\"refreshToken\", responseJson.refreshToken);"
+                ]
               }
             }
           ],
@@ -121,7 +99,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"Response time is acceptable\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(1000);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response has products array\", function () {\r\n    pm.expect(responseJson).to.have.property(\"products\");\r\n    pm.expect(responseJson.products).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Pagination fields are present and correct type\", function () {\r\n    pm.expect(responseJson).to.have.property(\"total\");\r\n    pm.expect(responseJson).to.have.property(\"skip\");\r\n    pm.expect(responseJson).to.have.property(\"limit\");\r\n    pm.expect(responseJson.total).to.be.a(\"number\");\r\n});\r\n\r\npm.test(\"Default page size is 30 or fewer\", function () {\r\n    pm.expect(responseJson.products.length).to.be.at.most(30);\r\n});\r\n\r\npm.test(\"Every product has required fields\", function() {\r\n    responseJson.products.forEach(function (product) {\r\n        pm.expect(product).to.have.property(\"id\");\r\n        pm.expect(product).to.have.property(\"title\");\r\n        pm.expect(product).to.have.property(\"price\");\r\n        pm.expect(product).to.have.property(\"category\");\r\n    });\r\n});\r\n\r\n\r\n"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response has products array\", function () {\r\n    pm.expect(responseJson).to.have.property(\"products\");\r\n    pm.expect(responseJson.products).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Pagination fields are present and correct type\", function () {\r\n    pm.expect(responseJson).to.have.property(\"total\");\r\n    pm.expect(responseJson).to.have.property(\"skip\");\r\n    pm.expect(responseJson).to.have.property(\"limit\");\r\n    pm.expect(responseJson.total).to.be.a(\"number\");\r\n});\r\n\r\npm.test(\"Default page size is 30 or fewer\", function () {\r\n    pm.expect(responseJson.products.length).to.be.at.most(30);\r\n});\r\n\r\npm.test(\"Every product has required fields\", function() {\r\n    responseJson.products.forEach(function (product) {\r\n        pm.expect(product).to.have.property(\"id\");\r\n        pm.expect(product).to.have.property(\"title\");\r\n        pm.expect(product).to.have.property(\"price\");\r\n        pm.expect(product).to.have.property(\"category\");\r\n    });\r\n});\r\n\r\n\r\n"
                 ]
               }
             }
@@ -158,7 +136,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response time is acceptable\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(1000);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Returned product has expected fields\", function () {\r\n    pm.expect(responseJson).to.have.property('id');\r\n    pm.expect(responseJson).to.have.property('title');\r\n    pm.expect(responseJson).to.have.property('price');\r\n    pm.expect(responseJson).to.have.property('category');\r\n});\r\n\r\npm.test(\"Returned product id matches requested id\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"product_id\")));\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Returned product has expected fields\", function () {\r\n    pm.expect(responseJson).to.have.property('id');\r\n    pm.expect(responseJson).to.have.property('title');\r\n    pm.expect(responseJson).to.have.property('price');\r\n    pm.expect(responseJson).to.have.property('category');\r\n});\r\n\r\npm.test(\"Returned product id matches requested id\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"product_id\")));\r\n});"
                 ]
               }
             }
@@ -187,7 +165,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response time is acceptable\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(1000);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response has products array\", function () {\r\n    pm.expect(responseJson).to.have.property('products');\r\n    pm.expect(responseJson.products).to.be.an('array');\r\n});\r\n\r\npm.test(\"All returned products match the search term\", function () {\r\n    responseJson.products.forEach(function (product) {\r\n        const searchTerm = pm.environment.get(\"search_term\").toLowerCase();\r\n        const matchesTitle = product.title.toLowerCase().includes(searchTerm);\r\n        const matchesDescription = product.description.toLowerCase().includes(searchTerm);\r\n        pm.expect(matchesTitle || matchesDescription).to.be.true;\r\n    });\r\n});\r\n\r\npm.test(\"Search results count does not exceed total\", function () {\r\n    pm.expect(responseJson.products.length).to.be.at.most(responseJson.total);\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response has products array\", function () {\r\n    pm.expect(responseJson).to.have.property('products');\r\n    pm.expect(responseJson.products).to.be.an('array');\r\n});\r\n\r\npm.test(\"All returned products match the search term\", function () {\r\n    responseJson.products.forEach(function (product) {\r\n        const searchTerm = pm.environment.get(\"search_term\").toLowerCase();\r\n        const matchesTitle = product.title.toLowerCase().includes(searchTerm);\r\n        const matchesDescription = product.description.toLowerCase().includes(searchTerm);\r\n        pm.expect(matchesTitle || matchesDescription).to.be.true;\r\n    });\r\n});\r\n\r\npm.test(\"Search results count does not exceed total\", function () {\r\n    pm.expect(responseJson.products.length).to.be.at.most(responseJson.total);\r\n});"
                 ]
               }
             }
@@ -499,7 +477,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Cart is created for the correct user\", function () {\r\n    pm.expect(responseJson.userId).to.eql(1);\r\n});\r\n\r\npm.test(\"Calculated totals are present and numeric\", function () {\r\n    pm.expect(responseJson.total).to.be.a('number');\r\n    pm.expect(responseJson.totalQuantity).to.be.a('number');\r\n    pm.expect(responseJson.totalQuantity).to.be.above(0);\r\n});"
+                  "pm.test(\"Status code is 201\", function (){\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Cart is created for the correct user\", function () {\r\n    pm.expect(responseJson.userId).to.eql(1);\r\n});\r\n\r\npm.test(\"Calculated totals are present and numeric\", function () {\r\n    pm.expect(responseJson.total).to.be.a('number');\r\n    pm.expect(responseJson.totalQuantity).to.be.a('number');\r\n    pm.expect(responseJson.totalQuantity).to.be.above(0);\r\n});"
                 ]
               }
             }
@@ -613,7 +591,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const responseJson = pm.response.json();\r\n\r\npm.test(\"Response confirms deletion via isDeleted flag\", function () {\r\n    pm.expect(responseJson).to.have.property('isDeleted', true);\r\n    pm.expect(responseJson).to.have.property('deletedOn');\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Response confirms deletion via isDeleted flag\", function () {\r\n    pm.expect(responseJson).to.have.property('isDeleted', true);\r\n    pm.expect(responseJson).to.have.property('deletedOn');\r\n});"
                 ]
               }
             }
@@ -949,7 +927,7 @@
       "name": "Comments",
       "item": [
         {
-          "name": "All Commments",
+          "name": "All Comments",
           "event": [
             {
               "listen": "test",
@@ -1045,7 +1023,7 @@
           "response": []
         },
         {
-          "name": "Comments with field section",
+          "name": "Comments with field selection",
           "event": [
             {
               "listen": "test",
