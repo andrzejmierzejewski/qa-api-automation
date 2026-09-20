@@ -1409,6 +1409,181 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "E2E - Purchase Flow",
+      "item": [
+        {
+          "name": "E2E - Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Access token is returned\", function () {\r\n    pm.expect(responseJson.accessToken).to.be.a('string').and.not.empty;\r\n});\r\n\r\npm.environment.set(\"accessToken\", responseJson.accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"username\": \"{{username}}\", \"password\": \"{{password}}\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "E2E - Get Current User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Authenticated user matches the logged-in username\", function () {\r\n    pm.expect(responseJson.username).to.eql(pm.environment.get(\"username\"));\r\n});\r\n\r\npm.environment.set(\"e2e_user_id\", responseJson.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "E2E - Get User's Carts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"User has at least one existing cart\", function () {\r\n    pm.expect(responseJson.carts).to.be.an('array');\r\n    pm.expect(responseJson.carts.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Returned cart genuinely belongs to this user\", function () {\r\n    pm.expect(responseJson.carts[0].userId).to.eql(Number(pm.environment.get(\"e2e_user_id\")));\r\n});\r\n\r\npm.environment.set(\"e2e_cart_id\", responseJson.carts[0].id);\r\npm.environment.set(\"e2e_product_id\", responseJson.carts[0].products[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{e2e_user_id}}/carts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{e2e_user_id}}",
+                "carts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "E2E - Update Cart Quantity",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Cart id matches requested id\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"e2e_cart_id\")));\r\n});\r\n\r\npm.test(\"Updated product quantity is reflected\", function () {\r\n    const updatedProduct = responseJson.products.find(function (p) {\r\n        return p.id === Number(pm.environment.get(\"e2e_product_id\"));\r\n    });\r\n    pm.expect(updatedProduct).to.not.be.undefined;\r\n    pm.expect(updatedProduct.quantity).to.eql(5);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"merge\": true,\r\n  \"products\": [\r\n    { \"id\": {{e2e_product_id}}, \"quantity\": 5 }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/carts/{{e2e_cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{e2e_cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "E2E - Delete Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"Deleted cart id matches requested id\", function () {\r\n    pm.expect(responseJson.id).to.eql(Number(pm.environment.get(\"e2e_cart_id\")));\r\n});\r\n\r\npm.test(\"Cart is marked as deleted\", function () {\r\n    pm.expect(responseJson).to.have.property('isDeleted', true);\r\n    pm.expect(responseJson).to.have.property('deletedOn');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/carts/{{e2e_cart_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{e2e_cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "A full purchase flow from login to checkout: find the user's cart, update what's in it, then clear it out. Built on real data pulled from live responses rather than fake IDs from write requests, since DummyJSON doesn't actually save anything you create or change."
     }
   ],
   "event": [
