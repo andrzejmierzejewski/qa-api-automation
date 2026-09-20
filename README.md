@@ -4,32 +4,34 @@ An API test automation suite built with Postman, covering authentication, full C
 
 ## Tech Stack
 
-- **Postman** — request building and test scripting
-- **JavaScript** — test assertions (Postman's built-in Chai-based test framework)
-- **Newman** — command-line collection runner
-- **GitHub Actions** — CI pipeline
+- **Postman** - request building and test scripting
+- **JavaScript** - test assertions (Postman's built-in Chai-based test framework)
+- **Newman** - command-line collection runner
+- **GitHub Actions** - CI pipeline
 
 ## Project Structure
+```
 qa-api-automation/
 ├── collections/
-│ └── DummyJSON API.postman_collection.json
+│   └── DummyJSON API.postman_collection.json
 ├── environment/
-│ └── DummyJSON Environment.postman_environment.json
+│   └── DummyJSON Environment.postman_environment.json
 ├── .github/
-│ └── workflows/
-│ └── tests.yml
+│   └── workflows/
+│       └── tests.yml
 └── README.md
+```
 ## Test Coverage
 
 The collection is organized into the following folders:
 
-- **Authentication** — login, token capture, and token refresh
-- **Products** — full CRUD, search, and validation scenarios
-- **Carts** — full CRUD, filtering, sorting, and merge-behavior scenarios
-- **Users** — full CRUD, nested-field filtering, sorting, and relationship endpoints
-- **Comments** — full CRUD and field-selection scenarios
-- **Negative Tests** — invalid/missing credentials, missing authorization, and not-found/empty-result handling across resources
-- **E2E - Purchase Flow** — a chained scenario simulating a real user session: login → discover the authenticated user's existing cart and product data → update the cart → delete the cart
+- **Authentication** - login, token capture, and token refresh
+- **Products** - full CRUD, search, and validation scenarios
+- **Carts** - full CRUD, filtering, sorting, and merge-behavior scenarios
+- **Users** - full CRUD, nested-field filtering, sorting, and relationship endpoints
+- **Comments** - full CRUD and field-selection scenarios
+- **Negative Tests** - invalid/missing credentials, missing authorization, and not-found/empty-result handling across resources
+- **E2E - Purchase Flow** - a chained scenario simulating a real user session: login → discover the authenticated user's existing cart and product data → update the cart → delete the cart
 
 ### Testing techniques demonstrated
 
