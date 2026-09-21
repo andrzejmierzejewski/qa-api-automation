@@ -2,11 +2,11 @@
 
 ![API Tests](https://github.com/andrzejmierzejewski/qa-api-automation/actions/workflows/tests.yml/badge.svg)
 
-An API test automation suite built with Postman, covering authentication, full CRUD operations, negative testing, and an end-to-end purchase flow against the [DummyJSON](https://dummyjson.com/docs) REST API. The suite runs locally via Postman or headlessly via Newman, and is integrated into GitHub Actions for continuous testing on every push.
+An API test automation suite built with Postman, covering authentication, CRUD operations, negative testing, and an end-to-end cart flow against the [DummyJSON](https://dummyjson.com/docs) REST API. The suite runs locally via Postman or headlessly via Newman, and is integrated into GitHub Actions for continuous testing on every push.
 
 ## About This Project
 
-This project was built as a hands-on introduction to API test automation, coming from a background in manual QA. Rather than following a single fixed tutorial, the collection was built incrementally - one resource at a time - with an emphasis on writing tests that verify real behavior and business logic, not just status codes. Along the way, this involved debugging real failures, investigating unexpected API behavior, and adjusting test design around genuine platform limitations (documented under Known Issues below) rather than working around them silently.
+This project was built as a hands-on introduction to API test automation, building on a background in manual QA. Rather than following a single fixed tutorial, the collection was built incrementally - one resource at a time - with an emphasis on writing tests that verify real behavior and business logic, not just status codes. Along the way, I investigated unexpected API behavior and adjusted the test design around genuine platform limitations documented below.
 
 ## Tech Stack
 
@@ -32,12 +32,12 @@ qa-api-automation/
 The collection is organized into the following folders:
 
 - **Authentication** - login, token capture, and token refresh
-- **Products** - full CRUD, search, and validation scenarios
-- **Carts** - full CRUD, filtering, sorting, and merge-behavior scenarios
-- **Users** - full CRUD, nested-field filtering, sorting, and relationship endpoints
-- **Comments** - full CRUD and field-selection scenarios
+- **Products** - CRUD operations, search, and validation scenarios
+- **Carts** - CRUD operations, filtering, sorting, and merge-behavior scenarios
+- **Users** - CRUD operations, nested-field filtering, sorting, and relationship endpoints
+- **Comments** - CRUD operations and field-selection scenarios
 - **Negative Tests** - invalid/missing credentials, missing authorization, and not-found/empty-result handling across resources
-- **E2E - Purchase Flow** - a chained scenario simulating a real user session: login → discover the authenticated user's existing cart and product data → update the cart → delete the cart
+- **E2E - Cart Flow** - a chained scenario simulating a real user session: login → discover the authenticated user's existing cart and product data → update the cart → delete the cart
 
 ### Testing techniques demonstrated
 
@@ -59,11 +59,14 @@ The collection is organized into the following folders:
 ### With Postman
 1. Import `collections/DummyJSON API.postman_collection.json`
 2. Import `environment/DummyJSON Environment.postman_environment.json`
-3. Select the environment, run `Authentication / Login` first to populate the access token, then run the collection
-
+3. Select DummyJSON Environment and run the collection
 ### With Newman
+Newman runs the same collection headlessly from the command line and is used by the GitHub Actions workflow.
+
+```
 npm install -g newman
 newman run "collections/DummyJSON API.postman_collection.json" -e "environment/DummyJSON Environment.postman_environment.json"
+```
 ## Continuous Integration
 
 A GitHub Actions workflow (`.github/workflows/tests.yml`) runs the full collection via Newman on every push and pull request to `main`.
@@ -72,6 +75,5 @@ A GitHub Actions workflow (`.github/workflows/tests.yml`) runs the full collecti
 
 These are documented findings from testing against DummyJSON's real behavior, not defects in this test suite:
 
-- **Refresh Token test may show as failing in CI/Newman.** The `Authentication / Refresh Token` test checks that a newly issued access token differs from the previous one. DummyJSON's JWTs use second-level timestamp precision, so when `Login` and `Refresh Token` execute in rapid succession (as they do in Newman/CI), they can produce an identical token. This is expected and does not indicate a functional problem with the API or the test.
 - **`/auth/me` accepts authentication via cookie, not just Bearer token.** Testing the unauthenticated case for this endpoint requires disabling Postman's cookie jar for that specific request (`Settings → Disable Cookie Jar`), since a session cookie set during a prior `Login` will otherwise silently authenticate the request even with no Authorization header.
-- **DummyJSON's write endpoints (POST/PUT/DELETE) do not persist data.** An id returned from a `POST` request cannot be used in a later, separate request (e.g. to fetch or delete it) — nothing was actually stored. This shaped the design of the E2E flow, which discovers and acts on the authenticated user's *existing* real cart data rather than attempting to verify a freshly created resource.
+- **DummyJSON's write endpoints (POST/PUT/DELETE) do not persist data.** An id returned from a `POST` request cannot be used in a later, separate request (e.g. to fetch or delete it) - nothing was actually stored. This shaped the design of the E2E flow, which discovers and acts on the authenticated user's *existing* real cart data rather than attempting to verify a freshly created resource.
