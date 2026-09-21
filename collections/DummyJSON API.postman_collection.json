@@ -59,6 +59,15 @@
                   "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst responseJson = pm.response.json();\r\n\r\npm.test(\"New accessToken is returned and is a string\", function () {\r\n    pm.expect(responseJson).to.have.property('accessToken');\r\n    pm.expect(responseJson.accessToken).to.be.a('string');\r\n});\r\n\r\npm.test(\"New accessToken is different from the old one\", function () {\r\n    const oldToken = pm.environment.get(\"accessToken\");\r\n    pm.expect(responseJson.accessToken).to.not.eql(oldToken);\r\n});\r\n\r\npm.environment.set(\"accessToken\", responseJson.accessToken);\r\npm.environment.set(\"refreshToken\", responseJson.refreshToken);"
                 ]
               }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "setTimeout(() => {}, 1100);"
+                ]
+              }
             }
           ],
           "request": {
